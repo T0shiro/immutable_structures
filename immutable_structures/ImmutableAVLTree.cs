@@ -4,7 +4,11 @@ using System.Text;
 
 namespace DataStructures.immutable_structures
 {
-    class ImmutableAVLTree
+    class ImmutableAVLTree<T> where T : IComparable
+    {
+    }
+
+    class ImmutableAVLTreeNode<T> where T : IComparable
     {
     }
 }

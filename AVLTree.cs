@@ -131,6 +131,30 @@ namespace CSKicksCollection.Trees
         {
             this.value = value;
         }
+
+        public void PrintPretty(string indent, bool last)
+        {
+            Console.Write(indent);
+            if (last)
+            {
+                Console.Write("\\-");
+                indent += "  ";
+            }
+            else
+            {
+                Console.Write("|-");
+                indent += "| ";
+            }
+            Console.WriteLine("({0}) ", this.value);
+            if (this.leftChild != null)
+            {
+                this.leftChild.PrintPretty(indent, false);
+            }
+            if (this.rightChild != null)
+            {
+                this.rightChild.PrintPretty(indent, true);
+            }
+        }
     }
 
     /// <summary>
@@ -145,6 +169,11 @@ namespace CSKicksCollection.Trees
         public int Count
         {
             get { return size; }
+        }
+
+        public void PrintPretty()
+        {
+            this.head.PrintPretty("", true);
         }
 
         /// <summary>
