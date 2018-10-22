@@ -1,72 +1,167 @@
-//====================================================
-//| Downloaded From                                  |
-//| Visual C# Kicks - http://www.vcskicks.com/       |
-//| License - http://www.vcskicks.com/license.html   |
-//====================================================
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSKicksCollection.Trees
 {
-    class AVLTreeNode<T> : BinaryTreeNode<T>
-        where T : IComparable
+    class AVLTreeNode<T> where T : IComparable
     {
+        private T value;
+        private AVLTreeNode<T> leftChild;
+        private AVLTreeNode<T> rightChild;
+        private AVLTreeNode<T> parent;
+        private AVLTree<T> tree;
+
+        /// <summary>
+        /// The value stored at the node
+        /// </summary>
+        public virtual T Value
+        {
+            get { return value; }
+            set { this.value = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the left child node
+        /// </summary>
+        public virtual AVLTreeNode<T> LeftChild
+        {
+            get { return leftChild; }
+            set { leftChild = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the right child node
+        /// </summary>
+        public virtual AVLTreeNode<T> RightChild
+        {
+            get { return rightChild; }
+            set { rightChild = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the parent node
+        /// </summary>
+        public virtual AVLTreeNode<T> Parent
+        {
+            get { return parent; }
+            set { parent = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the Binary Tree the node belongs to
+        /// </summary>
+        public virtual AVLTree<T> Tree
+        {
+            get { return tree; }
+            set { tree = value; }
+        }
+
+        /// <summary>
+        /// Gets whether the node is a leaf (has no children)
+        /// </summary>
+        public virtual bool IsLeaf
+        {
+            get { return this.ChildCount == 0; }
+        }
+
+        /// <summary>
+        /// Gets whether the node is internal (has children nodes)
+        /// </summary>
+        public virtual bool IsInternal
+        {
+            get { return this.ChildCount > 0; }
+        }
+
+        /// <summary>
+        /// Gets whether the node is the left child of its parent
+        /// </summary>
+        public virtual bool IsLeftChild
+        {
+            get { return this.Parent != null && this.Parent.LeftChild == this; }
+        }
+
+        /// <summary>
+        /// Gets whether the node is the right child of its parent
+        /// </summary>
+        public virtual bool IsRightChild
+        {
+            get { return this.Parent != null && this.Parent.RightChild == this; }
+        }
+
+        /// <summary>
+        /// Gets the number of children this node has
+        /// </summary>
+        public virtual int ChildCount
+        {
+            get
+            {
+                int count = 0;
+
+                if (this.LeftChild != null)
+                    count++;
+
+                if (this.RightChild != null)
+                    count++;
+
+                return count;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether the node has a left child node
+        /// </summary>
+        public virtual bool HasLeftChild
+        {
+            get { return (this.LeftChild != null); }
+        }
+
+        /// <summary>
+        /// Gets whether the node has a right child node
+        /// </summary>
+        public virtual bool HasRightChild
+        {
+            get { return (this.RightChild != null); }
+        }
+
+        /// <summary>
+        /// Create a new instance of an AVL Tree node
+        /// </summary>
         public AVLTreeNode(T value)
-            : base(value)
         {
-        }
-
-        public new AVLTreeNode<T> LeftChild
-        {
-            get
-            {
-                return (AVLTreeNode<T>)base.LeftChild;
-            }
-            set
-            {
-                base.LeftChild = value;
-            }
-        }
-
-        public new AVLTreeNode<T> RightChild
-        {
-            get
-            {
-                return (AVLTreeNode<T>)base.RightChild;
-            }
-            set
-            {
-                base.RightChild = value;
-            }
-        }
-
-        public new AVLTreeNode<T> Parent
-        {
-            get
-            {
-                return (AVLTreeNode<T>)base.Parent;
-            }
-            set
-            {
-                base.Parent = value;
-            }
+            this.value = value;
         }
     }
 
     /// <summary>
     /// AVL Tree data structure
     /// </summary>
-    class AVLTree<T> : BinaryTree<T>
-        where T : IComparable
+    class AVLTree<T> where T : IComparable
     {
-        /// <summary>
-        /// Returns the AVL Node of the tree
-        /// </summary>
-        public new AVLTreeNode<T> Root
+        private AVLTreeNode<T> head;
+        private Comparison<IComparable> comparer = CompareElements;
+        private int size;
+
+        public int Count
         {
-            get { return (AVLTreeNode<T>)base.Root; }
-            set { base.Root = value; }
+            get { return size; }
+        }
+
+        /// <summary>
+        /// Gets or sets the root of the tree (the top-most node)
+        /// </summary>
+        public virtual AVLTreeNode<T> Root
+        {
+            get { return head; }
+            set { head = value; }
+        }
+
+        /// <summary>
+        /// Compares two elements to determine their positions within the tree.
+        /// </summary>
+        public static int CompareElements(IComparable x, IComparable y)
+        {
+            return x.CompareTo(y);
         }
 
         /// <summary>
@@ -74,17 +169,33 @@ namespace CSKicksCollection.Trees
         /// </summary>
         public new AVLTreeNode<T> Find(T value)
         {
-            return (AVLTreeNode<T>)base.Find(value);
+            AVLTreeNode<T> node = this.head; //start at head
+            while (node != null)
+            {
+                if (node.Value.Equals(value)) //parameter value found
+                    return node;
+                else
+                {
+                    //Search left if the value is smaller than the current node
+                    bool searchLeft = comparer((IComparable)value, (IComparable)node.Value) < 0;
+
+                    if (searchLeft)
+                        node = node.LeftChild; //search left
+                    else
+                        node = node.RightChild; //search right
+                }
+            }
+            return null; //not found
         }
 
         /// <summary>
         /// Insert a value in the tree and rebalance the tree if necessary.
         /// </summary>
-        public override void Add(T value)
+        public new void Add(T value)
         {
             AVLTreeNode<T> node = new AVLTreeNode<T>(value);
 
-            base.Add(node); //add normally
+            this.AddNode(node); //add normally
 
             //Balance every node going up, starting with the parent
             AVLTreeNode<T> parentNode = node.Parent;
@@ -103,20 +214,147 @@ namespace CSKicksCollection.Trees
         }
 
         /// <summary>
-        /// Removes a given value from the tree and rebalances the tree if necessary.
+        /// Adds a node to the tree
         /// </summary>
-        public override bool Remove(T value)
+        public virtual void AddNode(AVLTreeNode<T> node)
         {
-            AVLTreeNode<T> valueNode = this.Find(value);
-            return this.Remove(valueNode);
+            if (this.head == null) //first element being added
+            {
+                this.head = node; //set node as root of the tree
+                node.Tree = this;
+                size++;
+            }
+            else
+            {
+                if (node.Parent == null)
+                    node.Parent = head; //start at head
+
+                //Node is inserted on the left side if it is smaller or equal to the parent
+                bool insertLeftSide = comparer((IComparable)node.Value, (IComparable)node.Parent.Value) <= 0;
+
+                if (insertLeftSide) //insert on the left
+                {
+                    if (node.Parent.LeftChild == null)
+                    {
+                        node.Parent.LeftChild = node; //insert in left
+                        size++;
+                        node.Tree = this; //assign node to this binary tree
+                    }
+                    else
+                    {
+                        node.Parent = node.Parent.LeftChild; //scan down to left child
+                        this.AddNode(node); //recursive call
+                    }
+                }
+                else //insert on the right
+                {
+                    if (node.Parent.RightChild == null)
+                    {
+                        node.Parent.RightChild = node; //insert in right
+                        size++;
+                        node.Tree = this; //assign node to this binary tree
+                    }
+                    else
+                    {
+                        node.Parent = node.Parent.RightChild;
+                        this.AddNode(node);
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Wrapper method for removing a node within the tree
+        /// Removes a given value from the tree and rebalances the tree if necessary.
         /// </summary>
-        protected new bool Remove(BinaryTreeNode<T> removeNode)
+        public bool Remove(T value)
         {
-            return this.Remove((AVLTreeNode<T>)removeNode);
+            AVLTreeNode<T> valueNode = this.Find(value);
+            return this.RemoveNode(valueNode);
+        }
+
+        /// <summary>
+        /// Removes a node from the tree and returns whether the removal was successful.
+        /// </summary>>
+        public bool RemoveNode(AVLTreeNode<T> removeNode)
+        {
+            if (removeNode == null || removeNode.Tree != this)
+                return false; //value doesn't exist or not of this tree
+
+            //Note whether the node to be removed is the root of the tree
+            bool wasHead = (removeNode == head);
+
+            if (this.Count == 1)
+            {
+                this.head = null; //only element was the root
+                removeNode.Tree = null;
+
+                size--; //decrease total element count
+            }
+            else if (removeNode.IsLeaf) //Case 1: No Children
+            {
+                //Remove node from its parent
+                if (removeNode.IsLeftChild)
+                    removeNode.Parent.LeftChild = null;
+                else
+                    removeNode.Parent.RightChild = null;
+
+                removeNode.Tree = null;
+                removeNode.Parent = null;
+
+                size--; //decrease total element count
+            }
+            else if (removeNode.ChildCount == 1) //Case 2: One Child
+            {
+                if (removeNode.HasLeftChild)
+                {
+                    //Put left child node in place of the node to be removed
+                    removeNode.LeftChild.Parent = removeNode.Parent; //update parent
+
+                    if (wasHead)
+                        this.Root = removeNode.LeftChild; //update root reference if needed
+
+                    if (removeNode.IsLeftChild) //update the parent's child reference
+                        removeNode.Parent.LeftChild = removeNode.LeftChild;
+                    else
+                        removeNode.Parent.RightChild = removeNode.LeftChild;
+                }
+                else //Has right child
+                {
+                    //Put left node in place of the node to be removed
+                    removeNode.RightChild.Parent = removeNode.Parent; //update parent
+
+                    if (wasHead)
+                        this.Root = removeNode.RightChild; //update root reference if needed
+
+                    if (removeNode.IsLeftChild) //update the parent's child reference
+                        removeNode.Parent.LeftChild = removeNode.RightChild;
+                    else
+                        removeNode.Parent.RightChild = removeNode.RightChild;
+                }
+
+                removeNode.Tree = null;
+                removeNode.Parent = null;
+                removeNode.LeftChild = null;
+                removeNode.RightChild = null;
+
+                size--; //decrease total element count
+            }
+            else //Case 3: Two Children
+            {
+                //Find inorder predecessor (right-most node in left subtree)
+                AVLTreeNode<T> successorNode = removeNode.LeftChild;
+                while (successorNode.RightChild != null)
+                {
+                    successorNode = successorNode.RightChild;
+                }
+
+                removeNode.Value = successorNode.Value; //replace value
+
+                this.Remove(successorNode); //recursively remove the inorder predecessor
+            }
+
+
+            return true;
         }
 
         /// <summary>
@@ -128,7 +366,7 @@ namespace CSKicksCollection.Trees
             AVLTreeNode<T> parentNode = valueNode.Parent;
 
             //Remove the node as usual
-            bool removed = base.Remove(valueNode);
+            bool removed = RemoveNode(valueNode);
 
             if (!removed)
                 return false; //removing failed, no need to rebalance
@@ -197,6 +435,39 @@ namespace CSKicksCollection.Trees
         }
 
         /// <summary>
+        /// Returns the height of the entire tree
+        /// </summary>
+        public virtual int GetHeight()
+        {
+            return this.GetHeight(this.Root);
+        }
+
+        /// <summary>
+        /// Returns the height of the subtree rooted at the parameter value
+        /// </summary>
+        public int GetHeight(T value)
+        {
+            //Find the value's node in tree
+            AVLTreeNode<T> valueNode = this.Find(value);
+            if (value != null)
+                return this.GetHeight(valueNode);
+            else
+                return 0;
+        }
+
+        /// <summary>
+        /// Returns the height of the subtree rooted at the parameter node
+        /// </summary>
+        public virtual int GetHeight(AVLTreeNode<T> startNode)
+        {
+            if (startNode == null)
+                return 0;
+            else
+                return 1 + Math.Max(GetHeight(startNode.LeftChild), GetHeight(startNode.RightChild));
+        }
+
+
+        /// <summary>
         /// Determines the balance of a given node
         /// </summary>
         protected virtual int getBalance(AVLTreeNode<T> root)
@@ -243,7 +514,7 @@ namespace CSKicksCollection.Trees
                     rootParent.LeftChild = pivot;
                 else
                     if (rootParent != null)
-                        rootParent.RightChild = pivot;
+                    rootParent.RightChild = pivot;
             }
         }
 
@@ -285,7 +556,7 @@ namespace CSKicksCollection.Trees
                     rootParent.LeftChild = pivot;
                 else
                     if (rootParent != null)
-                        rootParent.RightChild = pivot;
+                    rootParent.RightChild = pivot;
             }
         }
     }
