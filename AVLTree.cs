@@ -166,6 +166,32 @@ namespace CSKicksCollection.Trees
         private Comparison<IComparable> comparer = CompareElements;
         private int size;
 
+        private void dichotomyTree(AVLTree<T> tree, T[] array, int start, int end)
+        {
+            double middle = (end - start) / 2;
+            int rootIndex = (int)Math.Floor(middle);
+            Console.WriteLine(start+" "+end+" "+rootIndex);
+            Console.WriteLine(start + rootIndex);
+            tree.Add(array[start + rootIndex]);
+            if (end-start > 0)
+            {
+                if (start + rootIndex - 1 > 0)
+                {
+                    dichotomyTree(tree, array, start, start + rootIndex - 1);
+                }
+                if (start + rootIndex + 1 > 0 && end > 0)
+                {
+                    dichotomyTree(tree, array, start + rootIndex + 1, end);
+                }
+            }
+        }
+
+        public AVLTree(T[] array)
+        {
+            Array.Sort(array);
+            dichotomyTree(this, array, 0, array.Length-1);
+        }
+
         public int Count
         {
             get { return size; }
