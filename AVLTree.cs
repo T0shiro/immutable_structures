@@ -170,8 +170,6 @@ namespace CSKicksCollection.Trees
         {
             double middle = (end - start) / 2;
             int rootIndex = (int)Math.Floor(middle);
-            Console.WriteLine(start+" "+end+" "+rootIndex);
-            Console.WriteLine(start + rootIndex);
             tree.Add(array[start + rootIndex]);
             if (end-start > 0)
             {
@@ -613,6 +611,17 @@ namespace CSKicksCollection.Trees
                     if (rootParent != null)
                     rootParent.RightChild = pivot;
             }
+        }
+
+        public T popMinimum()
+        {
+            AVLTreeNode<T> current = this.Root;
+            while(current.HasLeftChild)
+            {
+                current = current.LeftChild;
+            }
+            this.Remove(current.Value);
+            return current.Value;
         }
     }
 }
