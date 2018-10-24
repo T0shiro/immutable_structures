@@ -116,6 +116,8 @@ namespace DataStructures.BinaryHeap
             return RightChild(node) < _heap.Count && RightChild(node) < _pos;
         }
 
-        public string Heap => String.Join(", ", _heap);
+        public string HeapString => String.Join(", ", _heap);
+
+        public List<int> Heap => _heap;
     }
 }
