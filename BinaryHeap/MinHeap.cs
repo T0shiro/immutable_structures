@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace DataStructures.BinaryHeap
 {
     public class MinHeap
     {
-        private int[] heap;
+        private List<int> _heap;
         private int _pos;
 
         public MinHeap(int[] values)
@@ -15,9 +15,8 @@ namespace DataStructures.BinaryHeap
 
         private void Heapify(int[] ints)
         {
-            heap = new int[ints.Length];
-            ints.CopyTo(heap, 0);
-            _pos = heap.Length;
+            _heap = new List<int>(ints);
+            _pos = _heap.Count;
             int mid = ints.Length / 2;
             for (int i = mid; i >= 0; i--)
             {
@@ -36,13 +35,13 @@ namespace DataStructures.BinaryHeap
                     minIndex = LeftChild(currentIndex);
                 }
 
-                if (HasRightChild(currentIndex) && heap[RightChild(currentIndex)] < heap[currentIndex] &&
-                    heap[RightChild(currentIndex)] < heap[minIndex])
+                if (HasRightChild(currentIndex) && _heap[RightChild(currentIndex)] < _heap[currentIndex] &&
+                    _heap[RightChild(currentIndex)] < _heap[minIndex])
                 {
                     minIndex = RightChild(currentIndex);
                 }
 
-                if (heap[minIndex] < heap[currentIndex])
+                if (_heap[minIndex] < _heap[currentIndex])
                 {
                     Swap(minIndex, currentIndex);
                 }
@@ -55,7 +54,7 @@ namespace DataStructures.BinaryHeap
         {
             int parentIndex = Parent(index);
             int currentIndex = index;
-            while (currentIndex > 0 && heap[parentIndex] > heap[currentIndex])
+            while (currentIndex > 0 && _heap[parentIndex] > _heap[currentIndex])
             {
                 Swap(parentIndex, currentIndex);
                 currentIndex = parentIndex;
@@ -65,28 +64,31 @@ namespace DataStructures.BinaryHeap
 
         public void Insert(int i)
         {
-//            int[] newHeap = new int[_pos + 1];
-//            heap.CopyTo(newHeap, 0);
-            heap.Append(i);
-//            heap = newHeap;
+            _heap.Add(i);
             PercolateUp(_pos);
             _pos++;
         }
 
         public int Peek()
         {
-            int x = heap[0];
+            return _heap[0];
+        }
+
+        public int Pop()
+        {
+            int x = _heap[0];
             _pos--;
-            heap[0] = heap[_pos];
+            _heap[0] = _heap[_pos];
             PercolateDown(0);
+            _heap.RemoveAt(_heap.Count - 1);
             return x;
         }
 
         private void Swap(int index1, int index2)
         {
-            int temp = heap[index1];
-            heap[index1] = heap[index2];
-            heap[index2] = temp;
+            int temp = _heap[index1];
+            _heap[index1] = _heap[index2];
+            _heap[index2] = temp;
         }
 
         private int Parent(int node)
@@ -101,7 +103,7 @@ namespace DataStructures.BinaryHeap
 
         private bool HasLeftChild(int node)
         {
-            return LeftChild(node) < heap.Length && LeftChild(node) < _pos;
+            return LeftChild(node) < _heap.Count && LeftChild(node) < _pos;
         }
 
         private int RightChild(int node)
@@ -111,9 +113,9 @@ namespace DataStructures.BinaryHeap
 
         private bool HasRightChild(int node)
         {
-            return RightChild(node) < heap.Length && RightChild(node) < _pos;
+            return RightChild(node) < _heap.Count && RightChild(node) < _pos;
         }
-        
-        public string Heap => String.Join(", ", heap);
+
+        public string Heap => String.Join(", ", _heap);
     }
 }

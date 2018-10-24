@@ -10,7 +10,9 @@ namespace DataStructures
             int[] values = {10, 9, 8, 7, 6};
             BinaryHeap.MinHeap heap = new BinaryHeap.MinHeap(values);
             Console.WriteLine(heap.Heap);
-//            heap.Insert(20);
+            heap.Insert(1);
+            Console.WriteLine(heap.Heap);
+            heap.Pop();
             Console.WriteLine(heap.Heap);
         }
     }
