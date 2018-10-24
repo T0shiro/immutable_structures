@@ -1,5 +1,5 @@
 ﻿using System;
-using CSKicksCollection.Trees;
+using DataStructures.immutable_structures;
 
 namespace DataStructures
 {
@@ -7,11 +7,13 @@ namespace DataStructures
     {
         static void Main(string[] args)
         {
-            int[] array = { 0, 1, 2, 3, 4, 5 };
-            AVLTree<int> tree = new AVLTree<int>(array);
-            tree.PrintPretty();
-            Console.WriteLine(tree.popMinimum());
-            tree.PrintPretty();
+            AVL tree = new AVL();
+            tree.Add(5);
+            tree.Add(3);
+            tree.Add(7);
+            tree.Add(2);
+            tree.Delete(7);
+            tree.DisplayTree();
             Console.ReadLine();
         }
     }

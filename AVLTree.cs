@@ -2,626 +2,289 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSKicksCollection.Trees
+namespace DataStructures.immutable_structures
 {
-    class AVLTreeNode<T> where T : IComparable
-    {
-        private T value;
-        private AVLTreeNode<T> leftChild;
-        private AVLTreeNode<T> rightChild;
-        private AVLTreeNode<T> parent;
-        private AVLTree<T> tree;
-
-        /// <summary>
-        /// The value stored at the node
-        /// </summary>
-        public virtual T Value
-        {
-            get { return value; }
-            set { this.value = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the left child node
-        /// </summary>
-        public virtual AVLTreeNode<T> LeftChild
-        {
-            get { return leftChild; }
-            set { leftChild = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the right child node
-        /// </summary>
-        public virtual AVLTreeNode<T> RightChild
-        {
-            get { return rightChild; }
-            set { rightChild = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the parent node
-        /// </summary>
-        public virtual AVLTreeNode<T> Parent
-        {
-            get { return parent; }
-            set { parent = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Binary Tree the node belongs to
-        /// </summary>
-        public virtual AVLTree<T> Tree
-        {
-            get { return tree; }
-            set { tree = value; }
-        }
-
-        /// <summary>
-        /// Gets whether the node is a leaf (has no children)
-        /// </summary>
-        public virtual bool IsLeaf
-        {
-            get { return this.ChildCount == 0; }
-        }
-
-        /// <summary>
-        /// Gets whether the node is internal (has children nodes)
-        /// </summary>
-        public virtual bool IsInternal
-        {
-            get { return this.ChildCount > 0; }
-        }
-
-        /// <summary>
-        /// Gets whether the node is the left child of its parent
-        /// </summary>
-        public virtual bool IsLeftChild
-        {
-            get { return this.Parent != null && this.Parent.LeftChild == this; }
-        }
-
-        /// <summary>
-        /// Gets whether the node is the right child of its parent
-        /// </summary>
-        public virtual bool IsRightChild
-        {
-            get { return this.Parent != null && this.Parent.RightChild == this; }
-        }
-
-        /// <summary>
-        /// Gets the number of children this node has
-        /// </summary>
-        public virtual int ChildCount
-        {
-            get
-            {
-                int count = 0;
-
-                if (this.LeftChild != null)
-                    count++;
-
-                if (this.RightChild != null)
-                    count++;
-
-                return count;
-            }
-        }
-
-        /// <summary>
-        /// Gets whether the node has a left child node
-        /// </summary>
-        public virtual bool HasLeftChild
-        {
-            get { return (this.LeftChild != null); }
-        }
-
-        /// <summary>
-        /// Gets whether the node has a right child node
-        /// </summary>
-        public virtual bool HasRightChild
-        {
-            get { return (this.RightChild != null); }
-        }
-
-        /// <summary>
-        /// Create a new instance of an AVL Tree node
-        /// </summary>
-        public AVLTreeNode(T value)
-        {
-            this.value = value;
-        }
-
-        public void PrintPretty(string indent, bool last)
-        {
-            Console.Write(indent);
-            if (last)
-            {
-                Console.Write("\\-");
-                indent += "  ";
-            }
-            else
-            {
-                Console.Write("|-");
-                indent += "| ";
-            }
-            Console.WriteLine("({0}) ", this.value);
-            if (this.leftChild != null)
-            {
-                this.leftChild.PrintPretty(indent, false);
-            }
-            if (this.rightChild != null)
-            {
-                this.rightChild.PrintPretty(indent, true);
-            }
-        }
-    }
-
-    /// <summary>
     /// AVL Tree data structure
-    /// </summary>
-    class AVLTree<T> where T : IComparable
+    class AVL
     {
-        private AVLTreeNode<T> head;
-        private Comparison<IComparable> comparer = CompareElements;
-        private int size;
-
-        private void dichotomyTree(AVLTree<T> tree, T[] array, int start, int end)
+        class Node
         {
-            double middle = (end - start) / 2;
-            int rootIndex = (int)Math.Floor(middle);
-            tree.Add(array[start + rootIndex]);
-            if (end-start > 0)
+            public int data;
+            public Node left;
+            public Node right;
+
+            public Node(int data)
             {
-                if (start + rootIndex - 1 > 0)
-                {
-                    dichotomyTree(tree, array, start, start + rootIndex - 1);
-                }
-                if (start + rootIndex + 1 > 0 && end > 0)
-                {
-                    dichotomyTree(tree, array, start + rootIndex + 1, end);
-                }
+                this.data = data;
             }
-        }
 
-        public AVLTree(T[] array)
-        {
-            Array.Sort(array);
-            dichotomyTree(this, array, 0, array.Length-1);
-        }
-
-        public int Count
-        {
-            get { return size; }
-        }
-
-        public void PrintPretty()
-        {
-            this.head.PrintPretty("", true);
-        }
-
-        /// <summary>
-        /// Gets or sets the root of the tree (the top-most node)
-        /// </summary>
-        public virtual AVLTreeNode<T> Root
-        {
-            get { return head; }
-            set { head = value; }
-        }
-
-        /// <summary>
-        /// Compares two elements to determine their positions within the tree.
-        /// </summary>
-        public static int CompareElements(IComparable x, IComparable y)
-        {
-            return x.CompareTo(y);
-        }
-
-        /// <summary>
-        /// Returns the AVL Node corresponding to the given value
-        /// </summary>
-        public new AVLTreeNode<T> Find(T value)
-        {
-            AVLTreeNode<T> node = this.head; //start at head
-            while (node != null)
+            public void PrintPretty(string indent, bool last)
             {
-                if (node.Value.Equals(value)) //parameter value found
-                    return node;
+                Console.Write(indent);
+                if (last)
+                {
+                    Console.Write("\\-");
+                    indent += "  ";
+                }
                 else
                 {
-                    //Search left if the value is smaller than the current node
-                    bool searchLeft = comparer((IComparable)value, (IComparable)node.Value) < 0;
-
-                    if (searchLeft)
-                        node = node.LeftChild; //search left
-                    else
-                        node = node.RightChild; //search right
+                    Console.Write("|-");
+                    indent += "| ";
                 }
-            }
-            return null; //not found
-        }
-
-        /// <summary>
-        /// Insert a value in the tree and rebalance the tree if necessary.
-        /// </summary>
-        public new void Add(T value)
-        {
-            AVLTreeNode<T> node = new AVLTreeNode<T>(value);
-
-            this.AddNode(node); //add normally
-
-            //Balance every node going up, starting with the parent
-            AVLTreeNode<T> parentNode = node.Parent;
-
-            while (parentNode != null)
-            {
-                int balance = this.getBalance(parentNode);
-                if (Math.Abs(balance) == 2) //-2 or 2 is unbalanced
+                Console.WriteLine("({0}) ", this.data);
+                if (this.left != null)
                 {
-                    //Rebalance tree
-                    this.balanceAt(parentNode, balance);
+                    this.left.PrintPretty(indent, false);
                 }
-
-                parentNode = parentNode.Parent; //keep going up
+                if (this.right != null)
+                {
+                    this.right.PrintPretty(indent, true);
+                }
             }
         }
 
-        /// <summary>
-        /// Adds a node to the tree
-        /// </summary>
-        public virtual void AddNode(AVLTreeNode<T> node)
+        Node root;
+
+        public AVL()
         {
-            if (this.head == null) //first element being added
+        }
+
+        public void Add(int data)
+        {
+            Node newItem = new Node(data);
+            if (root == null)
             {
-                this.head = node; //set node as root of the tree
-                node.Tree = this;
-                size++;
+                root = newItem;
             }
             else
             {
-                if (node.Parent == null)
-                    node.Parent = head; //start at head
-
-                //Node is inserted on the left side if it is smaller or equal to the parent
-                bool insertLeftSide = comparer((IComparable)node.Value, (IComparable)node.Parent.Value) <= 0;
-
-                if (insertLeftSide) //insert on the left
-                {
-                    if (node.Parent.LeftChild == null)
-                    {
-                        node.Parent.LeftChild = node; //insert in left
-                        size++;
-                        node.Tree = this; //assign node to this binary tree
-                    }
-                    else
-                    {
-                        node.Parent = node.Parent.LeftChild; //scan down to left child
-                        this.AddNode(node); //recursive call
-                    }
-                }
-                else //insert on the right
-                {
-                    if (node.Parent.RightChild == null)
-                    {
-                        node.Parent.RightChild = node; //insert in right
-                        size++;
-                        node.Tree = this; //assign node to this binary tree
-                    }
-                    else
-                    {
-                        node.Parent = node.Parent.RightChild;
-                        this.AddNode(node);
-                    }
-                }
+                root = RecursiveInsert(root, newItem);
             }
         }
-
-        /// <summary>
-        /// Removes a given value from the tree and rebalances the tree if necessary.
-        /// </summary>
-        public bool Remove(T value)
+        private Node RecursiveInsert(Node current, Node n)
         {
-            AVLTreeNode<T> valueNode = this.Find(value);
-            return this.RemoveNode(valueNode);
+            if (current == null)
+            {
+                current = n;
+                return current;
+            }
+            else if (n.data < current.data)
+            {
+                current.left = RecursiveInsert(current.left, n);
+                current = balance_tree(current);
+            }
+            else if (n.data > current.data)
+            {
+                current.right = RecursiveInsert(current.right, n);
+                current = balance_tree(current);
+            }
+            return current;
         }
 
-        /// <summary>
-        /// Removes a node from the tree and returns whether the removal was successful.
-        /// </summary>>
-        public bool RemoveNode(AVLTreeNode<T> removeNode)
+        private Node balance_tree(Node current)
         {
-            if (removeNode == null || removeNode.Tree != this)
-                return false; //value doesn't exist or not of this tree
-
-            //Note whether the node to be removed is the root of the tree
-            bool wasHead = (removeNode == head);
-
-            if (this.Count == 1)
+            int b_factor = balance_factor(current);
+            if (b_factor > 1)
             {
-                this.head = null; //only element was the root
-                removeNode.Tree = null;
-
-                size--; //decrease total element count
-            }
-            else if (removeNode.IsLeaf) //Case 1: No Children
-            {
-                //Remove node from its parent
-                if (removeNode.IsLeftChild)
-                    removeNode.Parent.LeftChild = null;
+                if (balance_factor(current.left) > 0)
+                {
+                    current = RotateLL(current);
+                }
                 else
-                    removeNode.Parent.RightChild = null;
-
-                removeNode.Tree = null;
-                removeNode.Parent = null;
-
-                size--; //decrease total element count
+                {
+                    current = RotateLR(current);
+                }
             }
-            else if (removeNode.ChildCount == 1) //Case 2: One Child
+            else if (b_factor < -1)
             {
-                if (removeNode.HasLeftChild)
+                if (balance_factor(current.right) > 0)
                 {
-                    //Put left child node in place of the node to be removed
-                    removeNode.LeftChild.Parent = removeNode.Parent; //update parent
-
-                    if (wasHead)
-                        this.Root = removeNode.LeftChild; //update root reference if needed
-
-                    if (removeNode.IsLeftChild) //update the parent's child reference
-                        removeNode.Parent.LeftChild = removeNode.LeftChild;
-                    else
-                        removeNode.Parent.RightChild = removeNode.LeftChild;
+                    current = RotateRL(current);
                 }
-                else //Has right child
+                else
                 {
-                    //Put left node in place of the node to be removed
-                    removeNode.RightChild.Parent = removeNode.Parent; //update parent
-
-                    if (wasHead)
-                        this.Root = removeNode.RightChild; //update root reference if needed
-
-                    if (removeNode.IsLeftChild) //update the parent's child reference
-                        removeNode.Parent.LeftChild = removeNode.RightChild;
-                    else
-                        removeNode.Parent.RightChild = removeNode.RightChild;
+                    current = RotateRR(current);
                 }
-
-                removeNode.Tree = null;
-                removeNode.Parent = null;
-                removeNode.LeftChild = null;
-                removeNode.RightChild = null;
-
-                size--; //decrease total element count
             }
-            else //Case 3: Two Children
-            {
-                //Find inorder predecessor (right-most node in left subtree)
-                AVLTreeNode<T> successorNode = removeNode.LeftChild;
-                while (successorNode.RightChild != null)
-                {
-                    successorNode = successorNode.RightChild;
-                }
-
-                removeNode.Value = successorNode.Value; //replace value
-
-                this.Remove(successorNode); //recursively remove the inorder predecessor
-            }
-
-
-            return true;
+            return current;
         }
 
-        /// <summary>
-        /// Removes a given node from the tree and rebalances the tree if necessary.
-        /// </summary>
-        public bool Remove(AVLTreeNode<T> valueNode)
+        public void Delete(int target)
+        {//and here
+            root = Delete(root, target);
+        }
+
+        private Node Delete(Node current, int target)
         {
-            //Save reference to the parent node to be removed
-            AVLTreeNode<T> parentNode = valueNode.Parent;
-
-            //Remove the node as usual
-            bool removed = RemoveNode(valueNode);
-
-            if (!removed)
-                return false; //removing failed, no need to rebalance
+            Node parent;
+            if (current == null)
+            { return null; }
             else
             {
-                //Balance going up the tree
-                while (parentNode != null)
+                //left subtree
+                if (target < current.data)
                 {
-                    int balance = this.getBalance(parentNode);
-
-                    if (Math.Abs(balance) == 1) //1, -1
-                        break; //height hasn't changed, can stop
-                    else if (Math.Abs(balance) == 2) //2, -2
+                    current.left = Delete(current.left, target);
+                    if (balance_factor(current) == -2)//here
                     {
-                        //Rebalance tree
-                        this.balanceAt(parentNode, balance);
+                        if (balance_factor(current.right) <= 0)
+                        {
+                            current = RotateRR(current);
+                        }
+                        else
+                        {
+                            current = RotateRL(current);
+                        }
                     }
-
-                    parentNode = parentNode.Parent;
                 }
-
-                return true;
+                //right subtree
+                else if (target > current.data)
+                {
+                    current.right = Delete(current.right, target);
+                    if (balance_factor(current) == 2)
+                    {
+                        if (balance_factor(current.left) >= 0)
+                        {
+                            current = RotateLL(current);
+                        }
+                        else
+                        {
+                            current = RotateLR(current);
+                        }
+                    }
+                }
+                //if target is found
+                else
+                {
+                    if (current.right != null)
+                    {
+                        //delete its inorder successor
+                        parent = current.right;
+                        while (parent.left != null)
+                        {
+                            parent = parent.left;
+                        }
+                        current.data = parent.data;
+                        current.right = Delete(current.right, parent.data);
+                        if (balance_factor(current) == 2)//rebalancing
+                        {
+                            if (balance_factor(current.left) >= 0)
+                            {
+                                current = RotateLL(current);
+                            }
+                            else { current = RotateLR(current); }
+                        }
+                    }
+                    else
+                    {   //if current.left != null
+                        return current.left;
+                    }
+                }
             }
+            return current;
         }
 
-        /// <summary>
-        /// Balances an AVL Tree node
-        /// </summary>
-        protected virtual void balanceAt(AVLTreeNode<T> node, int balance)
+        public void Find(int key)
         {
-            if (balance == 2) //right outweighs
+            if (Find(key, root).data == key)
             {
-                int rightBalance = getBalance(node.RightChild);
-
-                if (rightBalance == 1 || rightBalance == 0)
-                {
-                    //Left rotation needed
-                    rotateLeft(node);
-                }
-                else if (rightBalance == -1)
-                {
-                    //Right rotation needed
-                    rotateRight(node.RightChild);
-
-                    //Left rotation needed
-                    rotateLeft(node);
-                }
+                Console.WriteLine("{0} was found!", key);
             }
-            else if (balance == -2) //left outweighs
+            else
             {
-                int leftBalance = getBalance(node.LeftChild);
-                if (leftBalance == 1)
-                {
-                    //Left rotation needed
-                    rotateLeft(node.LeftChild);
-
-                    //Right rotation needed
-                    rotateRight(node);
-                }
-                else if (leftBalance == -1 || leftBalance == 0)
-                {
-                    //Right rotation needed
-                    rotateRight(node);
-                }
+                Console.WriteLine("Nothing found!");
             }
         }
 
-        /// <summary>
-        /// Returns the height of the entire tree
-        /// </summary>
-        public virtual int GetHeight()
+        private Node Find(int target, Node current)
         {
-            return this.GetHeight(this.Root);
-        }
 
-        /// <summary>
-        /// Returns the height of the subtree rooted at the parameter value
-        /// </summary>
-        public int GetHeight(T value)
-        {
-            //Find the value's node in tree
-            AVLTreeNode<T> valueNode = this.Find(value);
-            if (value != null)
-                return this.GetHeight(valueNode);
+            if (target < current.data)
+            {
+                if (target == current.data)
+                {
+                    return current;
+                }
+                else
+                    return Find(target, current.left);
+            }
             else
-                return 0;
+            {
+                if (target == current.data)
+                {
+                    return current;
+                }
+                else
+                    return Find(target, current.right);
+            }
+
         }
 
-        /// <summary>
-        /// Returns the height of the subtree rooted at the parameter node
-        /// </summary>
-        public virtual int GetHeight(AVLTreeNode<T> startNode)
-        {
-            if (startNode == null)
-                return 0;
-            else
-                return 1 + Math.Max(GetHeight(startNode.LeftChild), GetHeight(startNode.RightChild));
-        }
-
-
-        /// <summary>
-        /// Determines the balance of a given node
-        /// </summary>
-        protected virtual int getBalance(AVLTreeNode<T> root)
-        {
-            //Balance = right child's height - left child's height
-            return this.GetHeight(root.RightChild) - this.GetHeight(root.LeftChild);
-        }
-
-        /// <summary>
-        /// Rotates a node to the left within an AVL Tree
-        /// </summary>
-        protected virtual void rotateLeft(AVLTreeNode<T> root)
+        public void DisplayTree()
         {
             if (root == null)
-                return;
-
-            AVLTreeNode<T> pivot = root.RightChild;
-
-            if (pivot == null)
-                return;
-            else
             {
-                AVLTreeNode<T> rootParent = root.Parent; //original parent of root node
-                bool isLeftChild = (rootParent != null) && rootParent.LeftChild == root; //whether the root was the parent's left node
-                bool makeTreeRoot = root.Tree.Root == root; //whether the root was the root of the entire tree
-
-                //Rotate
-                root.RightChild = pivot.LeftChild;
-                pivot.LeftChild = root;
-
-                //Update parents
-                root.Parent = pivot;
-                pivot.Parent = rootParent;
-
-                if (root.RightChild != null)
-                    root.RightChild.Parent = root;
-
-                //Update the entire tree's Root if necessary
-                if (makeTreeRoot)
-                    pivot.Tree.Root = pivot;
-
-                //Update the original parent's child node
-                if (isLeftChild)
-                    rootParent.LeftChild = pivot;
-                else
-                    if (rootParent != null)
-                    rootParent.RightChild = pivot;
+                Console.WriteLine("Tree is empty");
+                return;
             }
+            this.root.PrintPretty("", true);
+            Console.WriteLine();
         }
 
-        /// <summary>
-        /// Rotates a node to the right within an AVL Tree
-        /// </summary>
-        protected virtual void rotateRight(AVLTreeNode<T> root)
+        private int max(int l, int r)
         {
-            if (root == null)
-                return;
-
-            AVLTreeNode<T> pivot = root.LeftChild;
-
-            if (pivot == null)
-                return;
-            else
-            {
-                AVLTreeNode<T> rootParent = root.Parent; //original parent of root node
-                bool isLeftChild = (rootParent != null) && rootParent.LeftChild == root; //whether the root was the parent's left node
-                bool makeTreeRoot = root.Tree.Root == root; //whether the root was the root of the entire tree
-
-                //Rotate
-                root.LeftChild = pivot.RightChild;
-                pivot.RightChild = root;
-
-                //Update parents
-                root.Parent = pivot;
-                pivot.Parent = rootParent;
-
-                if (root.LeftChild != null)
-                    root.LeftChild.Parent = root;
-
-                //Update the entire tree's Root if necessary
-                if (makeTreeRoot)
-                    pivot.Tree.Root = pivot;
-
-                //Update the original parent's child node
-                if (isLeftChild)
-                    rootParent.LeftChild = pivot;
-                else
-                    if (rootParent != null)
-                    rootParent.RightChild = pivot;
-            }
+            return l > r ? l : r;
         }
 
-        public T popMinimum()
+        private int getHeight(Node current)
         {
-            AVLTreeNode<T> current = this.Root;
-            while(current.HasLeftChild)
+            int height = 0;
+            if (current != null)
             {
-                current = current.LeftChild;
+                int l = getHeight(current.left);
+                int r = getHeight(current.right);
+                int m = max(l, r);
+                height = m + 1;
             }
-            this.Remove(current.Value);
-            return current.Value;
+            return height;
+        }
+
+        private int balance_factor(Node current)
+        {
+            int l = getHeight(current.left);
+            int r = getHeight(current.right);
+            int b_factor = l - r;
+            return b_factor;
+        }
+
+        private Node RotateRR(Node parent)
+        {
+            Node pivot = parent.right;
+            parent.right = pivot.left;
+            pivot.left = parent;
+            return pivot;
+        }
+
+        private Node RotateLL(Node parent)
+        {
+            Node pivot = parent.left;
+            parent.left = pivot.right;
+            pivot.right = parent;
+            return pivot;
+        }
+
+        private Node RotateLR(Node parent)
+        {
+            Node pivot = parent.left;
+            parent.left = RotateRR(pivot);
+            return RotateLL(parent);
+        }
+
+        private Node RotateRL(Node parent)
+        {
+            Node pivot = parent.right;
+            parent.right = RotateLL(pivot);
+            return RotateRR(parent);
         }
     }
 }
