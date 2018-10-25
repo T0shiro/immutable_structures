@@ -7,20 +7,23 @@ namespace DataStructures.BinaryHeap
     [TestFixture]
     public class MinHeapTests
     {
-        
-        int[] values = {10, 9, 8, 7, 6};
-        
-        [Test]
-        public void Heapify()
+
+        private static int[][] arrays =
         {
-            
+            new[] {10, 9, 8, 7, 6},
+            new[] {69, 42, 110, 3, 7, 1, 39}
+        };
+
+        [Test, TestCaseSource(nameof(arrays))]
+        public void Heapify(int[] values)
+        {
             MinHeap heap = new MinHeap(values);
             Assert.AreEqual(values.Length, heap.Heap.Count);
             Assert.IsTrue(isHeapValid(heap));
         }
 
-        [Test]
-        public void Insert()
+        [Test, TestCaseSource(nameof(arrays))]
+        public void Insert(int[] values)
         {
             MinHeap heap = new MinHeap(values);
             heap.Insert(5);
@@ -28,8 +31,8 @@ namespace DataStructures.BinaryHeap
             Assert.IsTrue(isHeapValid(heap));
         }
 
-        [Test]
-        public void Peek()
+        [Test, TestCaseSource(nameof(arrays))]
+        public void Peek(int[] values)
         {
             MinHeap heap = new MinHeap(values);
             int peek = heap.Peek();
@@ -37,8 +40,8 @@ namespace DataStructures.BinaryHeap
             Assert.AreEqual(values.Length, heap.Heap.Count);
         }
 
-        [Test]
-        public void Pop()
+        [Test, TestCaseSource(nameof(arrays))]
+        public void Pop(int[] values)
         {
             MinHeap heap = new MinHeap(values);
             int pop = heap.Pop();
@@ -50,9 +53,12 @@ namespace DataStructures.BinaryHeap
 
         private bool isHeapValid(MinHeap heap)
         {
-            for (int i = 0; 2 * i + 2 <= heap.Heap.Count; i++)
+            for (int i = 0; heap.RightChild(i) < heap.Heap.Count; i++)
             {
-                if (heap.Heap[i] < heap.LeftChild(i) && heap.Heap[i] < heap.RightChild(i)) return false;
+                if (heap.Heap[i] > heap.Heap[heap.LeftChild(i)] || heap.Heap[i] > heap.Heap[heap.RightChild(i)])
+                {
+                    return false;
+                }
             }
 
             return true;

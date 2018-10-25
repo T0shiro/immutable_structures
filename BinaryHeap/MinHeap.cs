@@ -50,6 +50,13 @@ namespace DataStructures.BinaryHeap
             }
         }
 
+        public void Insert(int i)
+        {
+            _heap.Add(i);
+            PercolateUp(_pos);
+            _pos++;
+        }
+
         private void PercolateUp(int index)
         {
             int parentIndex = Parent(index);
@@ -60,13 +67,6 @@ namespace DataStructures.BinaryHeap
                 currentIndex = parentIndex;
                 parentIndex = Parent(currentIndex);
             }
-        }
-
-        public void Insert(int i)
-        {
-            _heap.Add(i);
-            PercolateUp(_pos);
-            _pos++;
         }
 
         public int Peek()
