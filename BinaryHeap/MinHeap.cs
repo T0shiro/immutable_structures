@@ -96,7 +96,7 @@ namespace DataStructures.BinaryHeap
             return (node - 1) / 2;
         }
 
-        private int LeftChild(int node)
+        internal int LeftChild(int node)
         {
             return 2 * node + 1;
         }
@@ -106,7 +106,7 @@ namespace DataStructures.BinaryHeap
             return LeftChild(node) < _heap.Count && LeftChild(node) < _pos;
         }
 
-        private int RightChild(int node)
+        internal int RightChild(int node)
         {
             return 2 * node + 2;
         }
