@@ -75,7 +75,7 @@ namespace DataStructures
 
         public int Count()
         {
-            return getHeight(this.root);
+            return getSize(root);
         }
 
         public Node Head()
@@ -304,6 +304,24 @@ namespace DataStructures
                 height = m + 1;
             }
             return height;
+        }
+        
+        private int getSize(Node current)
+        {
+            if (current.left == null && current.right == null)
+            {
+                return 1;
+            }
+            int currentSize = 1;
+            if (current.left != null)
+            {
+                currentSize += getSize(current.left);
+            }
+            if (current.right != null)
+            {
+                currentSize += getSize(current.right);
+            }
+            return currentSize;
         }
 
         private int balance_factor(Node current)
