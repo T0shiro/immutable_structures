@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataStructures.immutable_structures
+namespace DataStructures
 {
     /// AVL Tree data structure
     class AVL
     {
-        class Node
+        public class Node
         {
             public int data;
             public Node left;
@@ -49,6 +49,40 @@ namespace DataStructures.immutable_structures
         {
         }
 
+        private void dichotomyTree(AVL tree, int[] array, int start, int end)
+        {
+            double middle = (end - start) / 2;
+            int rootIndex = (int)Math.Floor(middle);
+            tree.Add(array[start + rootIndex]);
+            if (end - start > 0)
+            {
+                if (start + rootIndex - 1 >= 0)
+                {
+                    dichotomyTree(tree, array, start, start + rootIndex - 1);
+                }
+                if (start + rootIndex + 1 >= 0 && end >= 0)
+                {
+                    dichotomyTree(tree, array, start + rootIndex + 1, end);
+                }
+            }
+        }
+
+        public AVL(int[] array)
+        {
+            Array.Sort(array);
+            dichotomyTree(this, array, 0, array.Length - 1);
+        }
+
+        public int Count()
+        {
+            return getHeight(this.root);
+        }
+
+        public Node Head()
+        {
+            return this.root;
+        }
+
         public void Add(int data)
         {
             Node newItem = new Node(data);
@@ -61,6 +95,7 @@ namespace DataStructures.immutable_structures
                 root = RecursiveInsert(root, newItem);
             }
         }
+
         private Node RecursiveInsert(Node current, Node n)
         {
             if (current == null)
@@ -218,6 +253,28 @@ namespace DataStructures.immutable_structures
                     return Find(target, current.right);
             }
 
+        }
+
+        public int Peek()
+        {
+            Node current = this.root;
+            while (current.left != null)
+            {
+                current = current.left;
+            }
+            return current.data;
+        }
+
+        public int Pop()
+        {
+            Node current = this.root;
+            while (current.left != null)
+            {
+                current = current.left;
+            }
+            int value = current.data;
+            this.Delete(current.data);
+            return value;
         }
 
         public void DisplayTree()

@@ -1,5 +1,5 @@
 ﻿using System;
-using DataStructures.immutable_structures;
+using DataStructures;
 
 namespace DataStructures
 {
@@ -7,12 +7,13 @@ namespace DataStructures
     {
         static void Main(string[] args)
         {
-            AVL tree = new AVL();
-            tree.Add(5);
-            tree.Add(3);
-            tree.Add(7);
-            tree.Add(2);
-            tree.Delete(7);
+            int[] array = {5, 3, 7, 2};
+            AVL tree1 = new AVL(array);
+            tree1.DisplayTree();
+            //int[] array = { 2,3,5,7 };
+            ImmutableAVL tree = new ImmutableAVL(array);
+            tree.DisplayTree();
+            tree.Add(8);
             tree.DisplayTree();
             Console.ReadLine();
         }
