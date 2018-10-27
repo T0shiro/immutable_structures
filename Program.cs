@@ -1,5 +1,4 @@
 ﻿using System;
-using DataStructures;
 
 namespace DataStructures
 {
@@ -7,21 +6,25 @@ namespace DataStructures
     {
         static void Main(string[] args)
         {
-            int[] array = {5, 3, 7, 2};
-            AVL tree1 = new AVL(array);
-            tree1.DisplayTree();
-            tree1.Add(8);
-            tree1.DisplayTree();
-            tree1.Delete(3);
-            tree1.DisplayTree();
-            //int[] array = { 2,3,5,7 };
-            ImmutableAVL tree = new ImmutableAVL(array);
-            tree.DisplayTree();
-            tree.Add(8);
-            tree.DisplayTree();
-            tree.Delete(3);
-            tree.DisplayTree();
-            Console.ReadLine();
+            int MAX_TWO_POW = 9;
+            int ALGO_ITERATIONS = 100;
+            runAVLTree runner = new runAVLTree();
+            Console.WriteLine("MAX ARRAY SIZE = 2^"+MAX_TWO_POW+", ITERATIONS FOR EACH = "+ALGO_ITERATIONS);
+            Console.WriteLine("Creation of tree : ");
+            for (int i = 2; i < Math.Pow(2, MAX_TWO_POW)+1; i *= 2)
+            {
+                Console.WriteLine(i+" : "+runner.RunCreation(i, ALGO_ITERATIONS));
+            }
+            Console.WriteLine("\nInsertion of minimum : ");
+            for (int i = 2; i < Math.Pow(2, MAX_TWO_POW)+1; i *= 2)
+            {
+                Console.WriteLine(i+" : "+runner.RunInsertion(i, ALGO_ITERATIONS));
+            }
+            Console.WriteLine("\nDeletion of minimum : ");
+            for (int i = 2; i < Math.Pow(2, MAX_TWO_POW)+1; i *= 2)
+            {
+                Console.WriteLine(i+" : "+runner.RunDeletion(i, ALGO_ITERATIONS));
+            }
         }
     }
 }

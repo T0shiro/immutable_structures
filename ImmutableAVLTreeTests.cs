@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -8,7 +9,7 @@ namespace DataStructures
         private static int[][] arrays =
         {
             new[] {10, 9, 8, 7, 6},
-            new[] {69, 42, 110, 3, 7, 1, 39}
+            new[]{69, 42, 110, 3, 7, 1, 39}
         };
 
         [Test, TestCaseSource(nameof(arrays))]
