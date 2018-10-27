@@ -80,7 +80,7 @@ namespace DataStructures
 
         public Node Head()
         {
-            return this.root;
+            return root;
         }
 
         public void Add(int data)

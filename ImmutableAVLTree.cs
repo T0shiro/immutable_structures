@@ -43,6 +43,11 @@ namespace DataStructures
         }
 
         Node root;
+        
+        public Node Head()
+        {
+            return root;
+        }
 
         private void dichotomyTree(ImmutableAVL tree, int[] array, int start, int end)
         {
@@ -77,6 +82,29 @@ namespace DataStructures
             }
             this.root.PrintPretty("", true);
             Console.WriteLine();
+        }
+        
+        public int Count()
+        {
+            return getSize(root);
+        }
+        
+        private int getSize(Node current)
+        {
+            if (current.left == null && current.right == null)
+            {
+                return 1;
+            }
+            int currentSize = 1;
+            if (current.left != null)
+            {
+                currentSize += getSize(current.left);
+            }
+            if (current.right != null)
+            {
+                currentSize += getSize(current.right);
+            }
+            return currentSize;
         }
 
         private Node newNode(Node old)
@@ -128,6 +156,28 @@ namespace DataStructures
                 current = balance_tree(current);
             }
             return current;
+        }
+        
+        public int Peek()
+        {
+            Node current = this.root;
+            while (current.left != null)
+            {
+                current = current.left;
+            }
+            return current.data;
+        }
+
+        public int Pop()
+        {
+            Node current = this.root;
+            while (current.left != null)
+            {
+                current = current.left;
+            }
+            int value = current.data;
+            this.Delete(current.data);
+            return value;
         }
 
         public void Delete(int target)
