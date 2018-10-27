@@ -130,6 +130,83 @@ namespace DataStructures
             return current;
         }
 
+        public void Delete(int target)
+        {
+            root = Delete(root, target);
+        }
+
+        private Node Delete(Node current, int target)
+        {
+            Node parent;
+            if (current == null)
+            { return null; }
+            else
+            {
+                //left subtree
+                if (target < current.data)
+                {
+                    current.left = Delete(current.left, target);
+                    if (balance_factor(current) == -2)//here
+                    {
+                        if (balance_factor(current.right) <= 0)
+                        {
+                            current = RotateRR(current);
+                        }
+                        else
+                        {
+                            current = RotateRL(current);
+                        }
+                    }
+                }
+                //right subtree
+                else if (target > current.data)
+                {
+                    current.right = Delete(current.right, target);
+                    if (balance_factor(current) == 2)
+                    {
+                        if (balance_factor(current.left) >= 0)
+                        {
+                            current = RotateLL(current);
+                        }
+                        else
+                        {
+                            current = RotateLR(current);
+                        }
+                    }
+                }
+                //if target is found
+                else
+                {
+                    if (current.right != null)
+                    {
+                        parent = newNode(current.right);
+                        //parent = current.right;
+                        while (parent.left != null)
+                        {
+                            //parent = parent.left;
+                            parent = newNode(parent.left);
+                        }
+                        current = newNode(parent, current.left, Delete(current.right, parent.data));
+                        //current.data = parent.data;
+                        //current.right = Delete(current.right, parent.data);
+                        if (balance_factor(current) == 2)//rebalancing
+                        {
+                            if (balance_factor(current.left) >= 0)
+                            {
+                                current = RotateLL(current);
+                            }
+                            else { current = RotateLR(current); }
+                        }
+                    }
+                    else
+                    {   //if current.left != null
+                        return current.left;
+                    }
+                }
+            }
+            return current;
+        }
+
         private Node balance_tree(Node current)
         {
             int b_factor = balance_factor(current);
@@ -189,8 +266,6 @@ namespace DataStructures
             Node pivot = parent.right;
             parent = newNode(parent, parent.left, pivot.left);
             pivot = newNode(pivot, parent, pivot.right);
-            //parent.right = pivot.left; //new parent
-            //pivot.left = parent;
             return pivot;
         }
 
@@ -199,8 +274,6 @@ namespace DataStructures
             Node pivot = parent.left;
             parent = newNode(parent, pivot.right, parent.right);
             pivot = newNode(pivot, pivot.left, parent);
-            //parent.left = pivot.right;
-            //pivot.right = parent;
             return pivot;
         }
 
@@ -208,7 +281,6 @@ namespace DataStructures
         {
             Node pivot = parent.left;
             parent = newNode(parent, RotateRR(pivot), parent.right);
-            //parent.left = RotateRR(pivot);
             return RotateLL(parent);
         }
 
@@ -216,7 +288,6 @@ namespace DataStructures
         {
             Node pivot = parent.right;
             parent = newNode(parent, parent.left, RotateLL(pivot));
-            //parent.right = RotateLL(pivot);
             return RotateRR(parent);
         }
     }
