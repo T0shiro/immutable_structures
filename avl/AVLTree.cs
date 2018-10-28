@@ -73,6 +73,7 @@ namespace DataStructures
             dichotomyTree(this, array, 0, array.Length - 1);
         }
 
+        //only used for check in test
         public int Count()
         {
             return getSize(root);
@@ -306,6 +307,7 @@ namespace DataStructures
             return height;
         }
         
+        //only used for check in test
         private int getSize(Node current)
         {
             if (current.left == null && current.right == null)
