@@ -14,6 +14,8 @@ namespace DataStructures
             
             RunSimulations(new RunAVLTree(), "avl", MAX_TWO_POW, ALGO_ITERATIONS);
             RunSimulations(new RunMinHeap(), "heap", MAX_TWO_POW, ALGO_ITERATIONS);
+            RunSimulations(new CompareAVLHeap(), "heap_vs_AVL", MAX_TWO_POW, ALGO_ITERATIONS);
+            //RunSimulationsComparaison("RedBlack_vs_AVL", MAX_TWO_POW, ALGO_ITERATIONS);
             
         }
 
@@ -24,6 +26,22 @@ namespace DataStructures
             
             Console.WriteLine("Creation of {0}:", structure);
             GenerateOutput(runner.RunCreation, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_creation.txt", structure));
+
+            Console.WriteLine("\nInsertion of minimum : ");
+            GenerateOutput(runner.RunInsertion, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_insertion.txt", structure));
+
+            Console.WriteLine("\nDeletion of minimum : ");
+            GenerateOutput(runner.RunDeletion, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_deletion.txt", structure));
+        }
+        
+        private static void RunSimulationsComparaison(string structure, int maxTwoPow,
+            int algoIterations)
+        {
+            CompareRedBlackAVL runner = new CompareRedBlackAVL();
+            Console.WriteLine("===== {0} =====", structure);
+            
+            Console.WriteLine("Creation of {0}:", structure);
+            GenerateOutput(runner.RunSearch, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_search.txt", structure));
 
             Console.WriteLine("\nInsertion of minimum : ");
             GenerateOutput(runner.RunInsertion, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_insertion.txt", structure));
