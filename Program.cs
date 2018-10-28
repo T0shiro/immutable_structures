@@ -14,15 +14,7 @@ namespace DataStructures
             
             RunSimulations(new RunAVLTree(), "avl", MAX_TWO_POW, ALGO_ITERATIONS);
             RunSimulations(new RunMinHeap(), "heap", MAX_TWO_POW, ALGO_ITERATIONS);
-
-//            int[] values = {10, 4, 5, 2, 1};
-            int[] values = {10, 9, 8, 7, 6};
-            BinaryHeap.MinHeap heap = new BinaryHeap.MinHeap(values);
-            Console.WriteLine(heap.HeapString);
-            heap.Insert(1);
-            Console.WriteLine(heap.HeapString);
-            heap.Pop();
-            Console.WriteLine(heap.HeapString);
+            
         }
 
         private static void RunSimulations(Runner runner, string structure, int maxTwoPow,

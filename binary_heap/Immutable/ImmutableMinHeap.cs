@@ -5,90 +5,137 @@ namespace DataStructures.BinaryHeap
 {
     public class ImmutableMinHeap
     {
-        private Node root;
+        private ImmutableMinHeap left;
+        private ImmutableMinHeap right;
+        private int value;
         private int size;
+        private int height;
 
-        public ImmutableMinHeap(int[] values)
+        public ImmutableMinHeap(int value, ImmutableMinHeap left, ImmutableMinHeap right)
         {
-            Heapify(values);
+            this.left = left;
+            this.right = right;
+            this.value = value;
+            this.size = left.size + right.size + 1;
+            this.height = Math.Max(left.height, right.height) + 1;
         }
 
-        private void Heapify(int[] ints)
-        {
-            int index = ints[0];
-            root = new Node(index);
-        }
-
-        private void PercolateDown(int index)
-        {
-        }
-
-        private void PercolateUp(int index, Node left, Node right)
-        {
-            
-        }
-
-        public void Insert(int n)
-        {
-            Insert(new Node(n));
-        }
-
-        private void Insert(Node n)
-        {
-            
-        }
-
-        public Node Peek()
-        {
-            return root;
-        }
-
-        public int Pop()
-        {
-            return 0;
-        }
-
-        private void Swap(int index1, int index2)
-        {
-        }
-    }
-
-    public class Node
-    {
-        public Node leftChild;
-        public Node rightChild;
-        public int value;
-
-        public Node(int value)
+        public ImmutableMinHeap(int value)
         {
             this.value = value;
         }
 
-        public bool HasLeftChild()
+        public ImmutableMinHeap()
         {
-            return !leftChild.Equals(null);
         }
 
-        public bool HasRightChild()
+        public ImmutableMinHeap Insert(int x)
         {
-            return !rightChild.Equals(null);
+            if (isEmpty()) return new ImmutableMinHeap(x);
+            if (left.size < Math.Pow(left.height, 2) - 1) return PercolateUp(value, left.Insert(x), right);
+            if (right.size < Math.Pow(right.height, 2) - 1) return PercolateUp(value, left, right.Insert(x));
+            if (right.height < left.height) return PercolateUp(value, left, right.Insert(x));
+            return PercolateUp(value, left.Insert(x), right);
         }
-    }
 
-    public class StackElement
-    {
-        public enum Direction
+
+        public ImmutableMinHeap Heapify(int[] ints)
         {
-            LEFT, RIGHT
+            Func<int, ImmutableMinHeap> loop = null;
+            loop = i => i < ints.Length
+                ? PercolateDown(ints[i], loop(2 * i + 1), loop(2 * i + 2))
+                : new Leaf();
+            return loop(0);
         }
-        
-        public Node node;
-        public Direction direction;
 
-        public StackElement(Node node, Direction direction)
+        private ImmutableMinHeap PercolateDown(int value, ImmutableMinHeap left, ImmutableMinHeap right)
         {
-            this.node = node;
-            this.direction = direction;
+            if (left is Branch && right is Branch && right.value < left.value && value > right.value)
+                return new ImmutableMinHeap(right.value, right.left, right.right);
+            if (left is Branch && value > left.value)
+                return new ImmutableMinHeap(left.value, PercolateDown(value, left.left, left.right), right);
+            return new ImmutableMinHeap(value, left, right);
+        }
+
+        private ImmutableMinHeap PercolateUp(int value, ImmutableMinHeap left, ImmutableMinHeap right)
+        {
+            if (left is Branch && value > left.value)
+                return new ImmutableMinHeap(left.value, new ImmutableMinHeap(value, left.left, left.right), right);
+            if (right is Branch && value > right.value)
+                return new ImmutableMinHeap(right.value, new ImmutableMinHeap(value, right.left, right.right), right);
+            return new ImmutableMinHeap(value, left, right);
+        }
+
+        public ImmutableMinHeap Pop()
+        {
+            return PercolateRootDown(MergeChildren(left, right));
+        }
+
+        private ImmutableMinHeap PercolateRootDown(ImmutableMinHeap heap)
+        {
+            return isEmpty()
+                ? new ImmutableMinHeap(Int32.MaxValue)
+                : heap.PercolateDown(heap.value, heap.left, heap.right);
+        }
+
+        private ImmutableMinHeap MergeChildren(ImmutableMinHeap left, ImmutableMinHeap right)
+        {
+            if (left.isEmpty() && right.isEmpty()) return new ImmutableMinHeap(Int32.MaxValue);
+            if (left.size < Math.Pow(left.height, 2) - 1)
+                return FloatLeft(left.value, MergeChildren(left.left, left.right), right);
+            if (right.size < Math.Pow(right.height, 2) - 1)
+                return FloatRight(right.value, left, MergeChildren(right.left, right.right));
+            if (right.height < left.height)
+                return FloatLeft(left.value, MergeChildren(left.left, left.right), right);
+            return FloatRight(right.value, left, MergeChildren(right.left, right.right));
+        }
+
+        private ImmutableMinHeap FloatLeft(int value, ImmutableMinHeap left, ImmutableMinHeap right)
+        {
+            return left is Branch
+                ? new ImmutableMinHeap(left.value, new ImmutableMinHeap(value, left.left, left.right), right)
+                : new ImmutableMinHeap(value, left, right);
+        }
+
+        private ImmutableMinHeap FloatRight(int value, ImmutableMinHeap left, ImmutableMinHeap right)
+        {
+            return right is Branch
+                ? new ImmutableMinHeap(right.value, left, new ImmutableMinHeap(value, left.left, left.right))
+                : new ImmutableMinHeap(value, left, right);
+        }
+
+        public int Peek()
+        {
+            return value;
+        }
+
+        private bool isEmpty()
+        {
+            return this is Leaf;
+        }
+
+        public class Branch : ImmutableMinHeap
+        {
+            public Branch(ImmutableMinHeap left, ImmutableMinHeap right, int value, int size, int height)
+            {
+                this.left = left;
+                this.right = right;
+                this.value = value;
+                this.size = size;
+                this.height = height;
+            }
+        }
+
+        public class Leaf : ImmutableMinHeap
+        {
+            public Leaf()
+            {
+                this.left = null;
+                this.right = null;
+                this.value = Int32.MaxValue;
+                this.size = 0;
+                this.height = 0;
+            }
         }
     }
 }

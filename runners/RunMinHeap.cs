@@ -48,7 +48,7 @@ namespace DataStructures
                 elapsedMsMutable += microseconds;
 
                 watch = Stopwatch.StartNew();
-                ImmutableMinHeap immutableMeanHeap = new ImmutableMinHeap(arrays[i]);
+                ImmutableMinHeap immutableMeanHeap = new ImmutableMinHeap().Heapify(arrays[i]);
                 watch.Stop();
                 ticks = watch.ElapsedTicks;
                 microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -75,7 +75,7 @@ namespace DataStructures
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
                 elapsedMsMutable += microseconds;
 
-                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap(arrays[i]);
+                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap().Heapify(arrays[i]);
                 watch = Stopwatch.StartNew();
                 immutableMinHeap.Insert(0);
                 watch.Stop();
@@ -105,7 +105,7 @@ namespace DataStructures
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
                 elapsedMsMutable += microseconds;
 
-                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap(arrays[i]);
+                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap().Heapify(arrays[i]);
                 immutableMinHeap.Insert(0);
                 watch = Stopwatch.StartNew();
                 immutableMinHeap.Pop();
