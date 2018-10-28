@@ -29,7 +29,7 @@ namespace DataStructures
             for (int i = 2; i <= Math.Pow(2, maxTwoPow); i *= 2)
             {
                 Console.WriteLine(i);
-                lines.Add(i + " : " + function(i, algoIterations));
+                lines.Add(i + " " + function(i, algoIterations));
             }
             System.IO.File.WriteAllLines(outputFile, lines);
         }
