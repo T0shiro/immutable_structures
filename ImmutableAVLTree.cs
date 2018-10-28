@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DataStructures
 {
-    /// AVL Tree data structure
-    class AVL
+    class ImmutableAVL
     {
         public class Node
         {
@@ -44,16 +43,17 @@ namespace DataStructures
         }
 
         Node root;
-
-        public AVL()
+        
+        public Node Head()
         {
+            return root;
         }
 
-        private void dichotomyTree(AVL tree, int[] array, int start, int end)
+        private void dichotomyTree(ImmutableAVL tree, int[] array, int start, int end)
         {
             double middle = (end - start) / 2;
             int rootIndex = (int)Math.Floor(middle);
-            tree.Add(array[start + rootIndex]);
+            tree.root = tree.Add(array[start + rootIndex]);
             if (end - start > 0)
             {
                 if (start + rootIndex - 1 >= 0)
@@ -67,23 +67,64 @@ namespace DataStructures
             }
         }
 
-        public AVL(int[] array)
+        public ImmutableAVL(int[] array)
         {
             Array.Sort(array);
             dichotomyTree(this, array, 0, array.Length - 1);
         }
 
+        public void DisplayTree()
+        {
+            if (root == null)
+            {
+                Console.WriteLine("Tree is empty");
+                return;
+            }
+            this.root.PrintPretty("", true);
+            Console.WriteLine();
+        }
+        
         public int Count()
         {
             return getSize(root);
         }
-
-        public Node Head()
+        
+        private int getSize(Node current)
         {
-            return root;
+            if (current.left == null && current.right == null)
+            {
+                return 1;
+            }
+            int currentSize = 1;
+            if (current.left != null)
+            {
+                currentSize += getSize(current.left);
+            }
+            if (current.right != null)
+            {
+                currentSize += getSize(current.right);
+            }
+            return currentSize;
         }
 
-        public void Add(int data)
+        private Node newNode(Node old)
+        {
+            Node result = new Node(old.data);
+            result.left = old.left;
+            result.right = old.right;
+            return result;
+        }
+
+        private Node newNode(Node old, Node left, Node right)
+        {
+
+            Node result = new Node(old.data);
+            result.left = left;
+            result.right = right;
+            return result;
+        }
+
+        public Node Add(int data)
         {
             Node newItem = new Node(data);
             if (root == null)
@@ -94,58 +135,53 @@ namespace DataStructures
             {
                 root = RecursiveInsert(root, newItem);
             }
+            return root;
         }
 
         private Node RecursiveInsert(Node current, Node n)
         {
             if (current == null)
             {
-                current = n;
+                current = new Node(n.data);
                 return current;
             }
             else if (n.data < current.data)
             {
-                current.left = RecursiveInsert(current.left, n);
+                current.left = newNode(RecursiveInsert(current.left, n));
                 current = balance_tree(current);
             }
             else if (n.data > current.data)
             {
-                current.right = RecursiveInsert(current.right, n);
+                current.right = newNode(RecursiveInsert(current.right, n));
                 current = balance_tree(current);
             }
             return current;
         }
-
-        private Node balance_tree(Node current)
+        
+        public int Peek()
         {
-            int b_factor = balance_factor(current);
-            if (b_factor > 1)
+            Node current = this.root;
+            while (current.left != null)
             {
-                if (balance_factor(current.left) > 0)
-                {
-                    current = RotateLL(current);
-                }
-                else
-                {
-                    current = RotateLR(current);
-                }
+                current = current.left;
             }
-            else if (b_factor < -1)
+            return current.data;
+        }
+
+        public int Pop()
+        {
+            Node current = this.root;
+            while (current.left != null)
             {
-                if (balance_factor(current.right) > 0)
-                {
-                    current = RotateRL(current);
-                }
-                else
-                {
-                    current = RotateRR(current);
-                }
+                current = current.left;
             }
-            return current;
+            int value = current.data;
+            this.Delete(current.data);
+            return value;
         }
 
         public void Delete(int target)
-        {//and here
+        {
             root = Delete(root, target);
         }
 
@@ -193,14 +229,16 @@ namespace DataStructures
                 {
                     if (current.right != null)
                     {
-                        //delete its inorder successor
-                        parent = current.right;
+                        parent = newNode(current.right);
+                        //parent = current.right;
                         while (parent.left != null)
                         {
-                            parent = parent.left;
+                            //parent = parent.left;
+                            parent = newNode(parent.left);
                         }
-                        current.data = parent.data;
-                        current.right = Delete(current.right, parent.data);
+                        current = newNode(parent, current.left, Delete(current.right, parent.data));
+                        //current.data = parent.data;
+                        //current.right = Delete(current.right, parent.data);
                         if (balance_factor(current) == 2)//rebalancing
                         {
                             if (balance_factor(current.left) >= 0)
@@ -219,73 +257,32 @@ namespace DataStructures
             return current;
         }
 
-        public void Find(int key)
+        private Node balance_tree(Node current)
         {
-            if (Find(key, root).data == key)
+            int b_factor = balance_factor(current);
+            if (b_factor > 1)
             {
-                Console.WriteLine("{0} was found!", key);
-            }
-            else
-            {
-                Console.WriteLine("Nothing found!");
-            }
-        }
-
-        private Node Find(int target, Node current)
-        {
-
-            if (target < current.data)
-            {
-                if (target == current.data)
+                if (balance_factor(current.left) > 0)
                 {
-                    return current;
+                    current = RotateLL(current);
                 }
                 else
-                    return Find(target, current.left);
-            }
-            else
-            {
-                if (target == current.data)
                 {
-                    return current;
+                    current = RotateLR(current);
+                }
+            }
+            else if (b_factor < -1)
+            {
+                if (balance_factor(current.right) > 0)
+                {
+                    current = RotateRL(current);
                 }
                 else
-                    return Find(target, current.right);
+                {
+                    current = RotateRR(current);
+                }
             }
-
-        }
-
-        public int Peek()
-        {
-            Node current = this.root;
-            while (current.left != null)
-            {
-                current = current.left;
-            }
-            return current.data;
-        }
-
-        public int Pop()
-        {
-            Node current = this.root;
-            while (current.left != null)
-            {
-                current = current.left;
-            }
-            int value = current.data;
-            this.Delete(current.data);
-            return value;
-        }
-
-        public void DisplayTree()
-        {
-            if (root == null)
-            {
-                Console.WriteLine("Tree is empty");
-                return;
-            }
-            this.root.PrintPretty("", true);
-            Console.WriteLine();
+            return current;
         }
 
         private int max(int l, int r)
@@ -305,24 +302,6 @@ namespace DataStructures
             }
             return height;
         }
-        
-        private int getSize(Node current)
-        {
-            if (current.left == null && current.right == null)
-            {
-                return 1;
-            }
-            int currentSize = 1;
-            if (current.left != null)
-            {
-                currentSize += getSize(current.left);
-            }
-            if (current.right != null)
-            {
-                currentSize += getSize(current.right);
-            }
-            return currentSize;
-        }
 
         private int balance_factor(Node current)
         {
@@ -335,30 +314,30 @@ namespace DataStructures
         private Node RotateRR(Node parent)
         {
             Node pivot = parent.right;
-            parent.right = pivot.left;
-            pivot.left = parent;
+            parent = newNode(parent, parent.left, pivot.left);
+            pivot = newNode(pivot, parent, pivot.right);
             return pivot;
         }
 
         private Node RotateLL(Node parent)
         {
             Node pivot = parent.left;
-            parent.left = pivot.right;
-            pivot.right = parent;
+            parent = newNode(parent, pivot.right, parent.right);
+            pivot = newNode(pivot, pivot.left, parent);
             return pivot;
         }
 
         private Node RotateLR(Node parent)
         {
             Node pivot = parent.left;
-            parent.left = RotateRR(pivot);
+            parent = newNode(parent, RotateRR(pivot), parent.right);
             return RotateLL(parent);
         }
 
         private Node RotateRL(Node parent)
         {
             Node pivot = parent.right;
-            parent.right = RotateLL(pivot);
+            parent = newNode(parent, parent.left, RotateLL(pivot));
             return RotateRR(parent);
         }
     }
