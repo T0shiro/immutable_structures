@@ -9,18 +9,11 @@ namespace DataStructures
         {
             int MAX_TWO_POW = 10;
             int ALGO_ITERATIONS = 100;
-            RunAVLTree runner = new RunAVLTree();
+
             Console.WriteLine("MAX ARRAY SIZE = 2^" + MAX_TWO_POW + ", ITERATIONS FOR EACH = " + ALGO_ITERATIONS);
-
-            Console.WriteLine("Creation of tree : ");
-            GenerateOutput(runner.RunCreation, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/creation.txt");
-
-            Console.WriteLine("\nInsertion of minimum : ");
-            GenerateOutput(runner.RunInsertion, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/insertion.txt");
-
-            Console.WriteLine("\nDeletion of minimum : ");
-            GenerateOutput(runner.RunDeletion, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/deletion.txt");
-
+            
+            RunSimulations(new RunAVLTree(), "avl", MAX_TWO_POW, ALGO_ITERATIONS);
+            RunSimulations(new RunMinHeap(), "heap", MAX_TWO_POW, ALGO_ITERATIONS);
 
 //            int[] values = {10, 4, 5, 2, 1};
             int[] values = {10, 9, 8, 7, 6};
@@ -30,6 +23,21 @@ namespace DataStructures
             Console.WriteLine(heap.HeapString);
             heap.Pop();
             Console.WriteLine(heap.HeapString);
+        }
+
+        private static void RunSimulations(Runner runner, string structure, int maxTwoPow,
+            int algoIterations)
+        {
+            Console.WriteLine("===== {0} =====", structure);
+            
+            Console.WriteLine("Creation of {0}:", structure);
+            GenerateOutput(runner.RunCreation, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_creation.txt", structure));
+
+            Console.WriteLine("\nInsertion of minimum : ");
+            GenerateOutput(runner.RunInsertion, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_insertion.txt", structure));
+
+            Console.WriteLine("\nDeletion of minimum : ");
+            GenerateOutput(runner.RunDeletion, maxTwoPow, algoIterations, String.Format(@"plot_generation/{0}_deletion.txt", structure));
         }
 
         private static void GenerateOutput(Func<int, int, Tuple<double, double>> function, int maxTwoPow,

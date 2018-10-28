@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DataStructures.BinaryHeap;
 
 namespace DataStructures
 {
-    public class RunAVLTree
+    public class RunMinHeap : Runner
     {
         private int[] createRandomArray(int size, Random rand)
         {
@@ -30,7 +31,7 @@ namespace DataStructures
             }
         }
         
-        public Tuple<double, double> RunCreation(int arraySize, int nbArrays)
+        public override Tuple<double, double> RunCreation(int arraySize, int nbArrays)
         {
             Init(arraySize, nbArrays);
             Stopwatch watch;
@@ -40,14 +41,14 @@ namespace DataStructures
             {                
                 int[] array = (int[]) arrays[i].Clone();
                 watch = Stopwatch.StartNew();
-                AVL tree = new AVL(array);
+                MinHeap heap = new MinHeap(array);
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
                 elapsedMsMutable += microseconds;
 
                 watch = Stopwatch.StartNew();
-                ImmutableAVL immutableAvl = new ImmutableAVL(arrays[i]);
+                ImmutableMinHeap immutableMeanHeap = new ImmutableMinHeap(arrays[i]);
                 watch.Stop();
                 ticks = watch.ElapsedTicks;
                 microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -58,7 +59,7 @@ namespace DataStructures
             return new Tuple<double, double>(Math.Round(elapsedMsMutable), Math.Round(elapsedMsImmutable));
         }
         
-        public Tuple<double, double> RunInsertion(int arraySize, int nbArrays)
+        public override Tuple<double, double> RunInsertion(int arraySize, int nbArrays)
         {
             Init(arraySize, nbArrays);
             Stopwatch watch;
@@ -66,17 +67,17 @@ namespace DataStructures
             double elapsedMsImmutable = 0;
             for (int i = 0; i < nbArrays; i++)
             {                
-                AVL tree = new AVL(arrays[i]);
+                MinHeap heap = new MinHeap(arrays[i]);
                 watch = Stopwatch.StartNew();
-                tree.Add(0);
+                heap.Insert(0);
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
                 elapsedMsMutable += microseconds;
 
-                ImmutableAVL immutableAvl = new ImmutableAVL(arrays[i]);
+                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap(arrays[i]);
                 watch = Stopwatch.StartNew();
-                immutableAvl.Add(0);
+                immutableMinHeap.Insert(0);
                 watch.Stop();
                 ticks = watch.ElapsedTicks;
                 microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -87,7 +88,7 @@ namespace DataStructures
             return new Tuple<double, double>(Math.Round(elapsedMsMutable), Math.Round(elapsedMsImmutable));
         }
         
-        public Tuple<double, double> RunDeletion(int arraySize, int nbArrays)
+        public override Tuple<double, double> RunDeletion(int arraySize, int nbArrays)
         {
             Init(arraySize, nbArrays);
             Stopwatch watch;
@@ -95,19 +96,19 @@ namespace DataStructures
             double elapsedMsImmutable = 0;
             for (int i = 0; i < nbArrays; i++)
             {                
-                AVL tree = new AVL(arrays[i]);
-                tree.Add(0);
+                MinHeap heap = new MinHeap(arrays[i]);
+                heap.Insert(0);
                 watch = Stopwatch.StartNew();
-                tree.Delete(0);
+                heap.Pop();
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
                 elapsedMsMutable += microseconds;
 
-                ImmutableAVL immutableAvl = new ImmutableAVL(arrays[i]);
-                immutableAvl.Add(0);
+                ImmutableMinHeap immutableMinHeap = new ImmutableMinHeap(arrays[i]);
+                immutableMinHeap.Insert(0);
                 watch = Stopwatch.StartNew();
-                immutableAvl.Delete(0);
+                immutableMinHeap.Pop();
                 watch.Stop();
                 ticks = watch.ElapsedTicks;
                 microseconds = (ticks / Stopwatch.Frequency) * 1000000;
