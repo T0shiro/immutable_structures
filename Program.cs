@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DataStructures
 {
@@ -8,23 +9,29 @@ namespace DataStructures
         {
             int MAX_TWO_POW = 10;
             int ALGO_ITERATIONS = 100;
-            runAVLTree runner = new runAVLTree();
-            Console.WriteLine("MAX ARRAY SIZE = 2^"+MAX_TWO_POW+", ITERATIONS FOR EACH = "+ALGO_ITERATIONS);
+            RunAVLTree runner = new RunAVLTree();
+            Console.WriteLine("MAX ARRAY SIZE = 2^" + MAX_TWO_POW + ", ITERATIONS FOR EACH = " + ALGO_ITERATIONS);
+            
             Console.WriteLine("Creation of tree : ");
-            for (int i = 2; i <= Math.Pow(2, MAX_TWO_POW); i *= 2)
-            {
-                Console.WriteLine(i+" : "+runner.RunCreation(i, ALGO_ITERATIONS));
-            }
+            GenerateOutput(runner.RunCreation, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/creation.txt");
+
             Console.WriteLine("\nInsertion of minimum : ");
-            for (int i = 2; i <= Math.Pow(2, MAX_TWO_POW); i *= 2)
-            {
-                Console.WriteLine(i+" : "+runner.RunInsertion(i, ALGO_ITERATIONS));
-            }
+            GenerateOutput(runner.RunInsertion, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/insertion.txt");
+
             Console.WriteLine("\nDeletion of minimum : ");
-            for (int i = 2; i <= Math.Pow(2, MAX_TWO_POW); i *= 2)
+            GenerateOutput(runner.RunDeletion, MAX_TWO_POW, ALGO_ITERATIONS, @"plot_generation/deletion.txt");
+        }
+
+        private static void GenerateOutput(Func<int, int, Tuple<double, double>> function, int maxTwoPow,
+            int algoIterations, string outputFile)
+        {
+            List<string> lines = new List<string>();
+            for (int i = 2; i <= Math.Pow(2, maxTwoPow); i *= 2)
             {
-                Console.WriteLine(i+" : "+runner.RunDeletion(i, ALGO_ITERATIONS));
+                Console.WriteLine(i);
+                lines.Add(i + " : " + function(i, algoIterations));
             }
+            System.IO.File.WriteAllLines(outputFile, lines);
         }
     }
 }

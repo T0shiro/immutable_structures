@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DataStructures
 {
-    public class runAVLTree
+    public class RunAVLTree
     {
         private int[] createRandomArray(int size, Random rand)
         {
