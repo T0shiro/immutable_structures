@@ -31,11 +31,13 @@ namespace DataStructures
                     Console.Write("|-");
                     indent += "| ";
                 }
+
                 Console.WriteLine("({0}) ", this.data);
                 if (this.left != null)
                 {
                     this.left.PrintPretty(indent, false);
                 }
+
                 if (this.right != null)
                 {
                     this.right.PrintPretty(indent, true);
@@ -52,7 +54,7 @@ namespace DataStructures
         private void dichotomyTree(AVL tree, int[] array, int start, int end)
         {
             double middle = (end - start) / 2;
-            int rootIndex = (int)Math.Floor(middle);
+            int rootIndex = (int) Math.Floor(middle);
             tree.Add(array[start + rootIndex]);
             if (end - start > 0)
             {
@@ -60,6 +62,7 @@ namespace DataStructures
                 {
                     dichotomyTree(tree, array, start, start + rootIndex - 1);
                 }
+
                 if (start + rootIndex + 1 >= 0 && end >= 0)
                 {
                     dichotomyTree(tree, array, start + rootIndex + 1, end);
@@ -73,6 +76,7 @@ namespace DataStructures
             dichotomyTree(this, array, 0, array.Length - 1);
         }
 
+        //only used for check in test
         public int Count()
         {
             return getSize(root);
@@ -113,6 +117,7 @@ namespace DataStructures
                 current.right = RecursiveInsert(current.right, n);
                 current = balance_tree(current);
             }
+
             return current;
         }
 
@@ -141,11 +146,12 @@ namespace DataStructures
                     current = RotateRR(current);
                 }
             }
+
             return current;
         }
 
         public void Delete(int target)
-        {//and here
+        {
             root = Delete(root, target);
         }
 
@@ -153,30 +159,57 @@ namespace DataStructures
         {
             Node parent;
             if (current == null)
-            { return null; }
-            else
             {
-                //left subtree
-                if (target < current.data)
+                return null;
+            }
+
+            //left subtree
+            if (target < current.data)
+            {
+                current.left = Delete(current.left, target);
+                if (balance_factor(current) == -2) //here
                 {
-                    current.left = Delete(current.left, target);
-                    if (balance_factor(current) == -2)//here
+                    if (balance_factor(current.right) <= 0)
                     {
-                        if (balance_factor(current.right) <= 0)
-                        {
-                            current = RotateRR(current);
-                        }
-                        else
-                        {
-                            current = RotateRL(current);
-                        }
+                        current = RotateRR(current);
+                    }
+                    else
+                    {
+                        current = RotateRL(current);
                     }
                 }
-                //right subtree
-                else if (target > current.data)
+            }
+            //right subtree
+            else if (target > current.data)
+            {
+                current.right = Delete(current.right, target);
+                if (balance_factor(current) == 2)
                 {
-                    current.right = Delete(current.right, target);
-                    if (balance_factor(current) == 2)
+                    if (balance_factor(current.left) >= 0)
+                    {
+                        current = RotateLL(current);
+                    }
+                    else
+                    {
+                        current = RotateLR(current);
+                    }
+                }
+            }
+            //if target is found
+            else
+            {
+                if (current.right != null)
+                {
+                    //delete its inorder successor
+                    parent = current.right;
+                    while (parent.left != null)
+                    {
+                        parent = parent.left;
+                    }
+
+                    current.data = parent.data;
+                    current.right = Delete(current.right, parent.data);
+                    if (balance_factor(current) == 2) //rebalancing
                     {
                         if (balance_factor(current.left) >= 0)
                         {
@@ -188,34 +221,13 @@ namespace DataStructures
                         }
                     }
                 }
-                //if target is found
                 else
                 {
-                    if (current.right != null)
-                    {
-                        //delete its inorder successor
-                        parent = current.right;
-                        while (parent.left != null)
-                        {
-                            parent = parent.left;
-                        }
-                        current.data = parent.data;
-                        current.right = Delete(current.right, parent.data);
-                        if (balance_factor(current) == 2)//rebalancing
-                        {
-                            if (balance_factor(current.left) >= 0)
-                            {
-                                current = RotateLL(current);
-                            }
-                            else { current = RotateLR(current); }
-                        }
-                    }
-                    else
-                    {   //if current.left != null
-                        return current.left;
-                    }
+                    //if current.left != null
+                    return current.left;
                 }
             }
+
             return current;
         }
 
@@ -233,26 +245,22 @@ namespace DataStructures
 
         private Node Find(int target, Node current)
         {
-
             if (target < current.data)
             {
                 if (target == current.data)
                 {
                     return current;
                 }
-                else
-                    return Find(target, current.left);
-            }
-            else
-            {
-                if (target == current.data)
-                {
-                    return current;
-                }
-                else
-                    return Find(target, current.right);
+
+                return Find(target, current.left);
             }
 
+            if (target == current.data)
+            {
+                return current;
+            }
+
+            return Find(target, current.right);
         }
 
         public int Peek()
@@ -272,6 +280,7 @@ namespace DataStructures
             {
                 current = current.left;
             }
+
             int value = current.data;
             this.Delete(current.data);
             return value;
@@ -284,6 +293,7 @@ namespace DataStructures
                 Console.WriteLine("Tree is empty");
                 return;
             }
+
             this.root.PrintPretty("", true);
             Console.WriteLine();
         }
@@ -303,24 +313,29 @@ namespace DataStructures
                 int m = max(l, r);
                 height = m + 1;
             }
+
             return height;
         }
-        
+
+        //only used for check in test
         private int getSize(Node current)
         {
             if (current.left == null && current.right == null)
             {
                 return 1;
             }
+
             int currentSize = 1;
             if (current.left != null)
             {
                 currentSize += getSize(current.left);
             }
+
             if (current.right != null)
             {
                 currentSize += getSize(current.right);
             }
+
             return currentSize;
         }
 

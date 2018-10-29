@@ -70,6 +70,40 @@ namespace DataStructures
         /// New instance of a Red-Black tree object
         /// </summary>
         public RBTree() { }
+            
+            private void dichotomyTree(RBTree tree, int[] array, int start, int end)
+            {
+                double middle = (end - start) / 2;
+                int rootIndex = (int)Math.Floor(middle);
+                tree.Insert(array[start + rootIndex]);
+                if (end - start > 0)
+                {
+                    if (start + rootIndex - 1 >= 0)
+                    {
+                        dichotomyTree(tree, array, start, start + rootIndex - 1);
+                    }
+                    if (start + rootIndex + 1 >= 0 && end >= 0)
+                    {
+                        dichotomyTree(tree, array, start + rootIndex + 1, end);
+                    }
+                }
+            }
+
+            public RBTree(int[] array)
+            {
+                Array.Sort(array);
+                dichotomyTree(this, array, 0, array.Length - 1);
+            }
+            
+            public int Peek()
+            {
+                Node current = root;
+                while (current.left != null)
+                {
+                    current = current.left;
+                }
+                return current.data;
+            }
             /// <summary>
             /// Left Rotate
             /// </summary>
