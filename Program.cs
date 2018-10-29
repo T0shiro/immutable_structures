@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataStructures
 {
@@ -7,14 +8,23 @@ namespace DataStructures
     {
         static void Main(string[] args)
         {
-            int MAX_TWO_POW = 10;
+            int MAX_TWO_POW = 20;
             int ALGO_ITERATIONS = 100;
 
             Console.WriteLine("MAX ARRAY SIZE = 2^" + MAX_TWO_POW + ", ITERATIONS FOR EACH = " + ALGO_ITERATIONS);
-            
-            RunSimulations(new RunAVLTree(), "avl", MAX_TWO_POW, ALGO_ITERATIONS);
+
+//            Heat();
+
             RunSimulations(new RunMinHeap(), "heap", MAX_TWO_POW, ALGO_ITERATIONS);
-            
+//            RunSimulations(new RunAVLTree(), "avl", MAX_TWO_POW, ALGO_ITERATIONS);
+        }
+
+        private static void Heat()
+        {
+            foreach (var i in Enumerable.Range(1, 1000000))
+            {
+                Console.Error.WriteLine(i);
+            }
         }
 
         private static void RunSimulations(Runner runner, string structure, int maxTwoPow,
