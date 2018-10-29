@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.RedBlack;
 using System.Diagnostics;
 
 namespace DataStructures
 {
     public class CompareRedBlackAVL
     {
-        private int[] createRandomArray(int size, Random rand)
+        private int[] createRandomArray(int size, Random rand, bool unique = false)
         {
             List<int> list = new List<int>();
             for (int i = 0; i < size; i++)
             {
-                list.Add(rand.Next(1, 3 * size));
+                {
+                    var next = rand.Next(1, 3 * size);
+                    if (!unique || !list.Contains(next)) list.Add(next);
+                }
             }
             return list.ToArray();
         }
@@ -25,7 +29,7 @@ namespace DataStructures
             arrays.Clear();
             for (int i = 0; i < nbArrays; i++)
             {
-                arrays.Add(createRandomArray(arraySize, rnd));
+                arrays.Add(createRandomArray(arraySize, rnd, true));
             }
         }
         
@@ -38,9 +42,13 @@ namespace DataStructures
             for (int i = 0; i < nbArrays; i++)
             {                
                 int[] array = (int[]) arrays[i].Clone();
-                RBTree rbTree = new RBTree(array);
+                RedBlackTree<int, string> rbTree = new RedBlackTree<int, string>();
+                foreach (var v in array)
+                {
+                    rbTree.Add(v, DateTime.UtcNow.Millisecond.ToString());
+                }
                 watch = Stopwatch.StartNew();
-                rbTree.Peek();
+                rbTree.GetMinKey();
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -56,7 +64,7 @@ namespace DataStructures
             }
             elapsedMsRedBlack /= nbArrays;
             elapsedMsAVL /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsRedBlack), Math.Round(elapsedMsAVL));
+            return new Tuple<double, double>(elapsedMsRedBlack, elapsedMsAVL);
         }
         
         public Tuple<double, double> RunInsertion(int arraySize, int nbArrays)
@@ -67,9 +75,9 @@ namespace DataStructures
             double elapsedMsAVL = 0;
             for (int i = 0; i < nbArrays; i++)
             {                
-                RBTree RBtree = new RBTree(arrays[i]);
+                RedBlackTree<int, string> rbTree = new RedBlackTree<int, string>();
                 watch = Stopwatch.StartNew();
-                RBtree.Insert(0);
+                rbTree.Add(0, "0");
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -85,7 +93,7 @@ namespace DataStructures
             }
             elapsedMsRedBlack /= nbArrays;
             elapsedMsAVL /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsRedBlack), Math.Round(elapsedMsAVL));
+            return new Tuple<double, double>(elapsedMsRedBlack, elapsedMsAVL);
         }
         
         public Tuple<double, double> RunDeletion(int arraySize, int nbArrays)
@@ -96,10 +104,10 @@ namespace DataStructures
             double elapsedMsAVL = 0;
             for (int i = 0; i < nbArrays; i++)
             {                
-                RBTree rbTree = new RBTree(arrays[i]);
-                rbTree.Insert(0);
+                RedBlackTree<int, string> rbTree = new RedBlackTree<int, string>();
+                rbTree.Add(0, "0");
                 watch = Stopwatch.StartNew();
-                rbTree.Delete(0);
+                rbTree.RemoveMin();
                 watch.Stop();
                 double ticks = watch.ElapsedTicks;
                 double microseconds = (ticks / Stopwatch.Frequency) * 1000000;
@@ -116,7 +124,7 @@ namespace DataStructures
             }
             elapsedMsRedBlack /= nbArrays;
             elapsedMsAVL /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsRedBlack), Math.Round(elapsedMsAVL));
+            return new Tuple<double, double>(elapsedMsRedBlack, elapsedMsAVL);
         }
     }
 }
