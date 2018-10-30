@@ -50,7 +50,7 @@ namespace DataStructures.BinaryHeap
         private ImmutableMinHeap PercolateDown(int value, ImmutableMinHeap left, ImmutableMinHeap right)
         {
             if (left is Branch && right is Branch && right.value < left.value && value > right.value)
-                return new ImmutableMinHeap(right.value, right.left, right.right);
+                return new ImmutableMinHeap(right.value, left, PercolateDown(value, right.left, right.right));
             if (left is Branch && value > left.value)
                 return new ImmutableMinHeap(left.value, PercolateDown(value, left.left, left.right), right);
             return new ImmutableMinHeap(value, left, right);
@@ -73,13 +73,13 @@ namespace DataStructures.BinaryHeap
         private ImmutableMinHeap PercolateRootDown(ImmutableMinHeap heap)
         {
             return isEmpty()
-                ? new ImmutableMinHeap(Int32.MaxValue)
+                ? new Leaf()
                 : heap.PercolateDown(heap.value, heap.left, heap.right);
         }
 
         private ImmutableMinHeap MergeChildren(ImmutableMinHeap left, ImmutableMinHeap right)
         {
-            if (left.isEmpty() && right.isEmpty()) return new ImmutableMinHeap(Int32.MaxValue);
+            if (left.isEmpty() && right.isEmpty()) return new Leaf();
             if (left.size < Math.Pow(left.height, 2) - 1)
                 return FloatLeft(left.value, MergeChildren(left.left, left.right), right);
             if (right.size < Math.Pow(right.height, 2) - 1)
@@ -99,13 +99,13 @@ namespace DataStructures.BinaryHeap
         private ImmutableMinHeap FloatRight(int value, ImmutableMinHeap left, ImmutableMinHeap right)
         {
             return right is Branch
-                ? new ImmutableMinHeap(right.value, left, new ImmutableMinHeap(value, left.left, left.right))
+                ? new ImmutableMinHeap(right.value, left, new ImmutableMinHeap(value, right.left, right.right))
                 : new ImmutableMinHeap(value, left, right);
         }
 
-        public int Peek()
+        public ImmutableMinHeap Peek()
         {
-            return value;
+            return this;
         }
 
         private bool isEmpty()
@@ -136,5 +136,15 @@ namespace DataStructures.BinaryHeap
                 this.height = 0;
             }
         }
+
+        public ImmutableMinHeap Left => left;
+
+        public ImmutableMinHeap Right => right;
+
+        public int Value => value;
+
+        public int Size => size;
+
+        public int Height => height;
     }
 }
