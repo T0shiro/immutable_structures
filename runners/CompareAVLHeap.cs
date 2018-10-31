@@ -55,7 +55,7 @@ namespace DataStructures
             }
             elapsedMsAVL /= nbArrays;
             elapsedMsHeap /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsAVL), Math.Round(elapsedMsHeap));
+            return new Tuple<double, double>(elapsedMsAVL, elapsedMsHeap);
         }
 
         public override Tuple<double, double> RunInsertion(int arraySize, int nbArrays)
@@ -84,7 +84,7 @@ namespace DataStructures
             }
             elapsedMsAVL /= nbArrays;
             elapsedMsHeap /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsAVL), Math.Round(elapsedMsHeap));
+            return new Tuple<double, double>(elapsedMsAVL, elapsedMsHeap);
         }
 
         public override Tuple<double, double> RunDeletion(int arraySize, int nbArrays)
@@ -115,7 +115,7 @@ namespace DataStructures
             }
             elapsedMsAVL /= nbArrays;
             elapsedMsHeap /= nbArrays;
-            return new Tuple<double, double>(Math.Round(elapsedMsAVL), Math.Round(elapsedMsHeap));
+            return new Tuple<double, double>(elapsedMsAVL, elapsedMsHeap);
         }
     }
 }
