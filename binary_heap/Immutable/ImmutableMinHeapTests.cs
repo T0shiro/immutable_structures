@@ -8,11 +8,7 @@ namespace DataStructures.BinaryHeap
     public class ImmutableMinHeapTests
     {
 
-        private static int[][] arrays =
-        {
-            new[] {10, 9, 8, 7, 6},
-            new[] {69, 42, 110, 3, 7, 1, 39}
-        };
+        private static int[][] arrays = ArraysGenerator.getRandomArrays();
 
         [Test, TestCaseSource(nameof(arrays))]
         public void Heapify(int[] values)
